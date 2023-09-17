@@ -1,18 +1,17 @@
-def add(x, y):
-    z = x + y
-    return z
-
-
-def multiply(num1, num2):
-    product = num1 * num2
-    result = add(product, product)
-    return result
-   
+import pickle
 def main():
-    num1 = 4
-    num2 = 3
-    answer = multiply(num1, num2)
-    print("The answer is", answer)
+    courses = [["Python", 3],
+               ["Trig", 3],
+               ["Physics", 4],
+               ["Yoga", 2]]
+    with open("classes.bin", "wb") as file:
+        pickle.dump(courses, file)
+    with open("classes.bin", "rb") as file:
+        course_list = pickle.load(file)
+    i = 0
+    while i < len(course_list):
+        course = course_list[i]
+        print(course[0], course[1], end=" ")
+        i += 2
 
-if __name__ == "__main__":
-    main()
+main()
