@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
         
 def get_number(prompt, low, high):
-    while True:
+    invalid = 1
+    while invalid == 1:
+      try:
         number = float(input(prompt))
         if number > low and number <= high:
-            is_valid = True
+            invalid = 0
             return number
         else:
             print(f"Entry must be greater than {low} " 
                   f"and less than or equal to {high}.")
-            
+      except:
+        print("whoops must be a number")      
 def get_integer(prompt, low, high):
  invalid = 1
  while invalid == 1:
@@ -24,7 +27,7 @@ def get_integer(prompt, low, high):
             print(f"Entry must be greater than {low} " 
                   f"and less than or equal to {high}.")
   except:
-   print("whoops")
+   print("whoops must be a number")
 def calculate_future_value(monthly_investment, yearly_interest, years):
     # convert yearly values to monthly values
     monthly_interest_rate = yearly_interest / 12 / 100
