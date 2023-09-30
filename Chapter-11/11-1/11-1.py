@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta,date
 
 def get_invoice_date():
-    while True:
-        invoice_date_str = input("Enter invoice date (MM/DD/YYYY): ")    
-        try:
-            dt = datetime.strptime(invoice_date_str, "%m/%d/%Y")
-        except ValueError:
-            print("Invalid date format! Try again.")
-            continue
-
-        # create date object from datetime object
+    invalid = 1
+    while invalid == 1 :
+     try:
+        invalid = 1
+        invoice_date_str = input("Enter the invoice date (MM/DD/YYYY): ") 
+        dt = datetime.strptime(invoice_date_str, "%m/%d/%Y")
+        invalid = 0
         invoice_date = date(dt.year, dt.month, dt.day)
-
-        # check if date object is today or earlier
         if invoice_date > date.today():
             print("Invoice date must be today or earlier. Try again.")
-        else:
-            return invoice_date
+            invalid = 1
+     except: 
+         print("please enter a valid date")
+         invalid = 1
+    return invoice_date
 
 def main():
     print("The Invoice Due Date program")
@@ -50,7 +49,7 @@ def main():
         again = input("Continue? (y/n): ")
         print()
         
-    print("Bye!")  
-        
+    print("Bye!")      
+
 if __name__ == "__main__":
     main()
