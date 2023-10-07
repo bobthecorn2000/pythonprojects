@@ -49,6 +49,7 @@ def display_menu():
     print()
     print("COMMAND MENU")
     print("show - Show book info")
+    print('list - show all books')
     print("add -  Add book")
     print("edit - Edit book")
     print("del -  Delete book")
