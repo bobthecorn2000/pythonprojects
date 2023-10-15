@@ -3,6 +3,15 @@ import os
 import traceback
 import csv
 
+class CustomError(Exception):
+    def __init__(self, message, code):
+        super().__init__(message)
+        self.code = code
+class ImpossibleOutcome(CustomError):
+    def __init__(self, message):
+        super().__init__(message, code=86753)
+        self.extra_info = "You've done the impossible, you broke the system, i have no idea what you did to see this message"
+    
 
 class c:
     WARNING = '\033[93m'
@@ -45,13 +54,17 @@ class assets:
     def exceptionhandle(Ex, debug: str = "Disable", errormessage: str = "I just don't know what went wrong"):
         if (debug == 'Enable'):
             print(f"{c.FAIL} {errormessage} \n")
-            print(Ex)
+            print(f"{Ex}")
+            if hasattr(Ex, 'code'):
+             print(f"Error code: {Ex.code}")
+            if hasattr(Ex, 'extra_info'):
+             print(f"additional note: {Ex.extra_info}")
             print("\n {\n")
             traceback.print_tb(Ex.__traceback__)
             print("\n }")
             c.ENDC
         else:print(f"{c.FAIL} {errormessage}")
-         
+        print(f'{c.ENDC}',end="")    
 
 
 
@@ -68,10 +81,10 @@ class assets:
         print(f'{c.GREEN}Menu Options{c.ENDC}')
         print('1 - Display lineup')
         print('2 - Add player')
-        print('3 - Remove player')
+        print(f'{c.FAINT}3 - Remove player')
         print('4 - Move player')
         print('5 - Edit player position')
-        print('6 - Edit player stats')
+        print(f'6 - Edit player stats{c.ENDC}')
         print('7 - Exit program')
         print(f'8 - enable/disable debug')
         print()
@@ -98,15 +111,16 @@ class assets:
 
                 
             elif (option == 2):
-                print()
+                print(f"{c.GREEN}Adding Another Player{c.ENDC}")
+                datawork.addmember(debug)
             elif (option == 3):
-                print()
+                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
             elif (option == 4):
-                print()
+                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
             elif (option == 5):
-                print()
+                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
             elif (option == 6):
-                print()
+                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
             elif (option == 7):
                 return
             elif (option == 8):
@@ -119,16 +133,17 @@ class assets:
                  
             else:
                 print(f"{c.FAIL}Invalid Input")
-        except Exception as Ex:
+        except ValueError as Ex:
         
          if (RawOption == "deletemysavedata"):
            try:
             os.remove(SaveGame)
             print(f"{c.GREEN}SaveGame deleted successfully.{c.ENDC}")
             return
-           except Exception as Ex: assets.exceptionhandle(Ex,debug,"There was an issue deleting your SaveData")
+           except Exception as Ex: assets.exceptionhandle(Ex,"Enable","There was an issue deleting your SaveData")
          else: assets.exceptionhandle(Ex,debug,"Invalid Input")
          pass
+        except Exception as Ex: assets.exceptionhandle(Ex,debug)
        # if (option == 1):
 
 class datawork():
@@ -149,6 +164,34 @@ class datawork():
     for row in data[1:]:
         print_row(row)
     assets.printsigns()
+
+   def addmember(debug):
+       #chatgpt wrote this i modified it (added exception handling and valid checks)
+        new_player_name = input("Enter player's name: ")
+        new_player_position = input("Enter player's position: ")
+        while True:
+         try:
+          new_player_ab = int(input("Enter player's at-bats: "))
+          if (new_player_ab < 0): raise ValueError("How did we get here")
+          break
+         except ValueError as ex: assets.exceptionhandle(ex,debug,"Please enter a valid whole number")
+         except Exception as ex: assets.exceptionhandle(ex,debug)
+        while True:
+         try:
+          new_player_hits = int(input("Enter player's hits: "))
+          if (new_player_ab < new_player_hits or new_player_hits < 0): raise ImpossibleOutcome("How did we get here")
+          else:
+           break
+         except ImpossibleOutcome as ex: assets.exceptionhandle(ex,debug,"Bat must be equal or greater then hit count and must be above zero") 
+         except ValueError as ex: assets.exceptionhandle(ex,debug,"Please enter a valid whole number")
+         except Exception as ex: assets.exceptionhandle(ex,debug)
+        new_player_avg = new_player_hits / new_player_ab if new_player_ab > 0 else 0.0
+
+        new_player_entry = [new_player_name, new_player_position, new_player_ab, new_player_hits, new_player_avg]
+
+        with open(SaveGame, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(new_player_entry)
 
 
 debug = "Disable"
@@ -193,7 +236,7 @@ if not isExist:
    else: 
        print(f"{c.FAIL}Invalid input{c.ENDC}")
        pass
-  print(f"{c.LIGHT_PURPLE}first time setup complete{c.ENDC}")
+  print(f"{c.LIGHT_PURPLE}First time setup complete{c.ENDC}")
   print()
    
 
