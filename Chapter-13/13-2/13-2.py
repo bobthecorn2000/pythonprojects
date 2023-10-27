@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from ctypes.wintypes import DOUBLE
+
 
 
 def move_disk(n, src, dest, temp):
@@ -28,8 +28,8 @@ def main():
 
 if __name__ == "__main__":
     #ignore this i wanted to see how high i could get the number on an overclocked gaming pc so i set it to the max int, turns out very high. let it run overnight. was still going in the morning
-    import sys
-    sys. setrecursionlimit(2147483647)
-    print(sys.getrecursionlimit())
+    #import sys
+    #sys. setrecursionlimit(2147483647)
+    #print(sys.getrecursionlimit())
     
     main()
