@@ -81,10 +81,10 @@ class assets:
         print(f'{c.GREEN}Menu Options{c.ENDC}')
         print('1 - Display lineup')
         print('2 - Add player')
-        print(f'{c.FAINT}3 - Remove player')
-        print('4 - Move player')
-        print('5 - Edit player position')
-        print(f'6 - Edit player stats{c.ENDC}')
+        print(f'3 - Remove player')
+        print(f'{c.FAINT}4 - Move player{c.ENDC}') # im not quite sure what this is for
+        print(f'5 - Edit player position')
+        print(f'6 - Edit player stats')
         print('7 - Exit program')
         print(f'8 - enable/disable debug')
         print()
@@ -114,13 +114,15 @@ class assets:
                 print(f"{c.GREEN}Adding Another Player{c.ENDC}")
                 datawork.addmember(debug)
             elif (option == 3):
-                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
+                datawork.remove(debug)
+                
             elif (option == 4):
-                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
+                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.){c.ENDC}")
+                
             elif (option == 5):
-                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
+                datawork.move_player(debug)
             elif (option == 6):
-                print(f"{c.LIGHT_GRAY}{c.BLINK}( ._.) no work yet{c.ENDC}")
+                datawork.edit_stats(debug)
             elif (option == 7):
                 return
             elif (option == 8):
@@ -147,7 +149,43 @@ class assets:
        # if (option == 1):
 
 class datawork():
-   
+
+    # i wanted to have alot of features so chat gpt did help with this. i do know whats going on though
+   def remove(debug):
+       try:
+        with open(SaveGame, mode='r', newline='') as file:
+            reader = csv.reader(file)
+            data = list(reader)
+        
+        datawork.printresults()  # Print the current data before removal
+        
+        player_name = input("Enter player's name to remove: ").lower()
+        
+        found = False
+        new_data = []
+        
+        for row in data:
+            if row[0].lower() == player_name:
+                found = True
+                continue
+            new_data.append(row)
+        
+        if found:
+            with open(SaveGame, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(new_data)
+            
+            print(f"{c.GREEN}Player {player_name} removed successfully.{c.ENDC}")
+        else:
+            print(f"{c.FAIL}Player {player_name} not found.{c.ENDC}")
+       except FileNotFoundError as ex:
+            assets.exceptionhandle(ex, debug, f"File {SaveGame} not found.")
+       except PermissionError as ex:
+            assets.exceptionhandle(ex, debug, f"Permission denied for file {SaveGame}.")
+       except Exception as ex:
+            assets.exceptionhandle(ex, debug)
+    
+
    def printresults():
     assets.printsigns()
     with open(SaveGame, mode='r') as file:
@@ -155,7 +193,7 @@ class datawork():
                     data = list(reader)
     def print_row(row):
         print("{:<20} {:<5} {:<5} {:<5} {:<5}".format(*row))
-        
+     
 # Print the header row
     print_row(data[0])
     print("-" * 79)  # Print a dashed line for separation
@@ -192,8 +230,92 @@ class datawork():
         with open(SaveGame, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(new_player_entry)
+   def move_player(debug):
+        try:
+            with open(SaveGame, mode='r', newline='') as file:
+                reader = csv.reader(file)
+                data = list(reader)
+            
+            datawork.printresults()  # Print the current data before moving
+            
+            player_name = input("Enter player's name to move: ").lower()  # Convert input to lowercase
+            
+            found = False
+            index = None
 
+            for i, row in enumerate(data):
+                if row[0].lower() == player_name:  # Convert row name to lowercase for comparison
+                    found = True
+                    index = i
+                    break
+            
+            if found:
+                new_position = input("Enter new position for the player: ")
 
+                data[index][1] = new_position  # Update the position
+                
+                with open(SaveGame, mode='w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerows(data)
+                
+                print(f"{c.GREEN}Player {player_name} moved successfully to {new_position}.{c.ENDC}")
+            else:
+                print(f"{c.FAIL}Player {player_name} not found.{c.ENDC}")
+        except FileNotFoundError as ex:
+            assets.exceptionhandle(ex, debug, f"File {SaveGame} not found.")
+        except PermissionError as ex:
+            assets.exceptionhandle(ex, debug, f"Permission denied for file {SaveGame}.")
+        except Exception as ex:
+            assets.exceptionhandle(ex, debug)
+   def edit_stats(debug):
+        try:
+            with open(SaveGame, mode='r', newline='') as file:
+                reader = csv.reader(file)
+                data = list(reader)
+            
+            datawork.printresults()  # Print the current data before editing
+            
+            player_name = input("Enter player's name to edit stats: ").lower()  # Convert input to lowercase
+            
+            found = False
+            index = None
+
+            for i, row in enumerate(data):
+                if row[0].lower() == player_name:  # Convert row name to lowercase for comparison
+                    found = True
+                    index = i
+                    break
+            
+            if found:
+                new_ab = int(input(f"Enter new at-bats for {player_name}: "))
+                new_hits = int(input(f"Enter new hits for {player_name}: "))
+                
+                if new_ab < 0 or new_hits < 0 or new_hits > new_ab:
+                    raise ImpossibleOutcome("How did we get here")
+                
+                new_avg = new_hits / new_ab if new_ab > 0 else 0.0
+
+                data[index][2] = new_ab  # Update at-bats
+                data[index][3] = new_hits  # Update hits
+                data[index][4] = new_avg  # Update average
+                
+                with open(SaveGame, mode='w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerows(data)
+                
+                print(f"{c.GREEN}Stats for {player_name} updated successfully.{c.ENDC}")
+            else:
+                print(f"{c.FAIL}Player {player_name} not found.{c.ENDC}")
+        except FileNotFoundError as ex:
+            assets.exceptionhandle(ex, debug, f"File {SaveGame} not found.")
+        except PermissionError as ex:
+            assets.exceptionhandle(ex, debug, f"Permission denied for file {SaveGame}.")
+        except ValueError as ex:
+            assets.exceptionhandle(ex, debug, "Please enter valid whole numbers.")
+        except ImpossibleOutcome as ex:
+            assets.exceptionhandle(ex, debug, "Bat must be equal or greater then hit count and must be above zero")
+        except Exception as ex:
+            assets.exceptionhandle(ex, debug)
 debug = "Disable"
 position = ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'P']
 env = os.getenv('LOCALAPPDATA')
