@@ -150,7 +150,7 @@ class assets:
 
 class datawork():
 
-    # i wanted to have alot of features so chat gpt did help with this. i do know whats going on though
+    # i wanted to have alot of features so chat gpt did help with this. i do know whats going on though as gpt doesnt always get it right
    def remove(debug):
        try:
         with open(SaveGame, mode='r', newline='') as file:
