@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from DB import datawork
-
+# ok i sped ran this with cuz its 8pm on 12/15 and i need to get this in lol
 class PlayerGUI:
     def __init__(self, root):
         self.root = root
